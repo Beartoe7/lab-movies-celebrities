@@ -1,8 +1,10 @@
-<h2>Celebrities</h2>
-<div class="container">
-    {{#each celebrity}}
-    <div>
-        <p>{{name}}</p>
-    </div>
-    {{/each}}
+<div>
+    <h2> Celebrities </h2>
+    <ul>
+        {{#each celebrities}}
+            <li>
+                Name: {{this.name}}
+            </li>
+        {{/each}}
+    </ul>
 </div>

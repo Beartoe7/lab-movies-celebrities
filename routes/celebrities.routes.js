@@ -1,63 +1,39 @@
-// starter code in both routes/celebrities.routes.js and routes/movies.routes.js
 const router = require("express").Router();
+const celebrityModel = require('../models/Celebrity.model')
 
-// all your routes here
-const Celebrity = require("../models/Celebrity.model");
 
-router.get("/celebrities/create", (req, res, next) => {
-        res.render("./../views/celebrities/new-celebrity"); 
-});
-
-router.post("/celebrities/create", async (req, res, next)=>{
-    let celebrity = {
-        name: req.body.name,
-        occupation: req.body.occupation,
-        catchPhrase: req.body.catchPhrase
-    };
-
-    try {
-        // let addCelebrity = await Celebrity.insertMany([celebrity]);
-        let addCelebrity = new Celebrity;
-        addCelebrity.name = req.body.name;
-        addCelebrity.occupation= req.body.occupation;
-        addCelebrity.catchPhrase= req.body.catchPhrase;
-        await addCelebrity.save();
-        console.log('result', addCelebrity);
-        return res.redirect("/celebrities")
-    } catch (error) {
-        console.log("Error" ,error)
-        return res.send({message: 'somethhing went wrong.', error});
-    }
-    // .then(result => {
-    //     console.log("result: ",result);
-    //     // res.send(result);
-    //     res.redirect("/celebrities/celebrities");      //?
-    // })
-    // .catch(err => {
-    //     res.render("/celebrities/new-celebrity")
-    // })
+router.get("/", (req,res,next) => {
+    celebrityModel.find()
+    .then(data => {
+        res.render("celebrities/celebrities", {celebrities: data})
+    })
+    .catch(err => {
+        console.log(err)
+    })
 })
+router.get("/create", (req, res, next) => {
+    res.render("celebrities/new-celebrity")
+  })
+  
+  router.post('/create', (req, res, next) => {
+    const name = req.body.name
+    const occupation = req.body.occupation
+    const catchPhrase = req.body.catchPhrase
+  
+    celebrityModel.create({
+      name,
+      occupation,
+      catchPhrase
+    })
+    .then(data => {
+        console.log(data)
+        res.redirect('celebrities/celebrities')
+    })
+    .catch(err => {
+        console.log(err)
+        res.render('celebrities/new-celebrity')
+    })
+  
+  })
 
-
-
-
-    router.get("/celebrities", (req, res, next) => {
-        let allCelebrities ={};
-        if (req.query.name) allCelebrities.name = req.query.name;
-        Celebrity.find(allCelebrities)
-            .then (result =>{
-                return res.send({data: result})
-                let data= {
-                    name : result
-                }
-        
-
-            res.render("./../views/celebrities/celebrities", data)
-        })
-        .catch(err => next(err))
-    });
-
-
-
-
-module.exports = router;
+module.exports = router
